@@ -229,7 +229,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👥 Authors
 
-sravan venkata
+Sravan Venkata
 
 ## 🙏 Acknowledgments
 
