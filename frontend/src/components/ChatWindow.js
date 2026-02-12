@@ -48,7 +48,7 @@ function ChatWindow({ chatId }) {
   // listen for new messages (ONLY ONCE)
   useEffect(() => {
     const handleNewMessage = (message) => {
-      setMessages((prev) => [...prev, message]);
+      
     };
 
     socket.on("new-message", handleNewMessage);
