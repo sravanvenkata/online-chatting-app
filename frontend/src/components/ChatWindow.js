@@ -45,10 +45,13 @@ function ChatWindow({ chatId }) {
     };
   }, [chatId]);
 
-  // listen for new messages (ONLY ONCE)
+  // listen for new messages
   useEffect(() => {
     const handleNewMessage = (message) => {
-      
+      // Only add message if it belongs to the current chat
+      if (message.chatId === chatId) {
+        setMessages((prev) => [...prev, message]);
+      }
     };
 
     socket.on("new-message", handleNewMessage);
@@ -56,7 +59,7 @@ function ChatWindow({ chatId }) {
     return () => {
       socket.off("new-message", handleNewMessage);
     };
-  }, []);
+  }, [chatId]);
 
   // auto scroll
   useEffect(() => {
