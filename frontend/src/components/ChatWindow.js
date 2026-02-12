@@ -93,52 +93,6 @@ function ChatWindow({ chatId }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* header */}
-      <div className="h-14 bg-white border-b flex items-center px-6">
-        <div className="font-semibold">
-          {chatInfo?.participants?.find((p) => p.username)?.username}
-        </div>
-      </div>
-
-      {/* messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-2">
-        {messages.map((msg) => (
-          <div key={msg._id}>
-            <div>{msg.text}</div>
-            <div className="text-xs text-gray-400">
-              {formatTime(msg.createdAt)}
-            </div>
-          </div>
-        ))}
-        <div ref={bottomRef} />
-      </div>
-
-      {/* input */}
-      <div className="flex gap-2 p-4 border-t">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && text.trim()) sendMessage();
-          }}
-          placeholder="Type a message"
-          className="flex-1 border rounded px-3 py-2"
-        />
-        <button
-          onClick={sendMessage}
-          disabled={!text.trim()}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Send
-        </button>
-      </div>
-    </div>
-  );
-}
-
-
- return (
   <div className="flex flex-col h-full">
 <div className="h-14 border-b flex items-center px-4 font-semibold">
   {(() => {
@@ -236,7 +190,7 @@ function ChatWindow({ chatId }) {
 
   </div></div>
 );
-
+}
 
 
 export default ChatWindow;
