@@ -92,6 +92,7 @@ function ChatWindow({ chatId }) {
 
   useEffect(() => {
     socket.on("new-message", (message) => {
+      console.log("Socket connected");
       setMessages((prev) => [...prev, message]);
     });
 
