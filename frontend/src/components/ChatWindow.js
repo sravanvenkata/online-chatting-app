@@ -49,7 +49,7 @@ function ChatWindow({ chatId }) {
   useEffect(() => {
     const handleNewMessage = (message) => {
       // Only add message if it belongs to the current chat
-      if (message.chatId === chatId) {
+      if (String(message.chatId) === String(chatId)) {
         setMessages((prev) => [...prev, message]);
       }
     };
@@ -74,7 +74,7 @@ function ChatWindow({ chatId }) {
   const sendMessage = async () => {
     if (!text.trim()) return;
 
-    await api.post("/message/send", { chatId, text });
+    socket.emit("send-message", { chatId: String(chatId), text });
     setText("");
   };
 
@@ -128,7 +128,7 @@ function ChatWindow({ chatId }) {
           atob(localStorage.getItem("token").split(".")[1])
         ).userId;
 
-        const isMine = msg.senderId === myId;
+        const isMine = String(msg.senderId) === String(myId);
 
         return (
           <div

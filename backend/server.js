@@ -32,6 +32,9 @@ app.use("/api/message", require("./routes/message"));
 
 app.use("/api/user", require("./routes/user"));
 
+const Chat = require("./models/Chat");
+const Message = require("./models/Message");
+
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -59,9 +62,62 @@ io.on("connection", (socket) => {
     return;
   }
 
-  socket.on("join-chat", (chatId) => {
-    socket.join(chatId);
-    console.log(`User ${socket.userId} joined chat ${chatId}`);
+  socket.on("join-chat", async (chatId) => {
+    try {
+      const chat = await Chat.exists({
+        _id: chatId,
+        participants: socket.userId,
+      });
+
+      if (!chat) {
+        return;
+      }
+
+      socket.join(chatId);
+      console.log(`User ${socket.userId} joined chat ${chatId}`);
+    } catch (err) {
+      console.error("Join chat error:", err);
+    }
+  });
+
+  socket.on("leave-chat", (chatId) => {
+    socket.leave(chatId);
+    console.log(`User ${socket.userId} left chat ${chatId}`);
+  });
+
+  socket.on("send-message", async ({ chatId, text }) => {
+    try {
+      if (!chatId || !text?.trim()) {
+        return;
+      }
+
+      const chat = await Chat.findOne({
+        _id: chatId,
+        participants: socket.userId,
+      });
+
+      if (!chat) {
+        return;
+      }
+
+      const message = new Message({
+        chatId,
+        senderId: socket.userId,
+        text: text.trim(),
+      });
+
+      await message.save();
+      await Chat.findByIdAndUpdate(chatId, { lastMessage: text.trim() });
+
+      const payload = message.toObject();
+      payload._id = payload._id.toString();
+      payload.chatId = payload.chatId.toString();
+      payload.senderId = payload.senderId.toString();
+
+      io.to(chatId).emit("new-message", payload);
+    } catch (err) {
+      console.error("Send message error:", err);
+    }
   });
 
   socket.on("disconnect", () => {

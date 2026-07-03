@@ -14,12 +14,23 @@ function App() {
   const user = getCurrentUser();
 
   useEffect(() => {
-  socket.connect();
+    if (!isLoggedIn) {
+      socket.disconnect();
+      return;
+    }
 
-  return () => {
-    socket.disconnect();
-  };
-}, []);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    }
+
+    socket.auth = { token };
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [isLoggedIn]);
 
   if (!isLoggedIn) {
     return <Auth onAuth={() => setIsLoggedIn(true)} />;
@@ -32,7 +43,7 @@ function App() {
     {/* Top bar */}
     <div className="h-12 bg-white border-b flex items-center justify-between px-6">
       <div className="font-semibold text-lg">
-        {user.username}
+        {user?.username}
       </div>
 
       <button

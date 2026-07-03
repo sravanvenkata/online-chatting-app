@@ -45,8 +45,15 @@ router.get("/",auth,async(req,res)=>{
 });
 
 router.get("/:id", auth, async (req, res) => {
-  const chat = await Chat.findById(req.params.id)
-    .populate("participants", "username");
+    const chat = await Chat.findOne({
+        _id: req.params.id,
+        participants: req.userId,
+    }).populate("participants", "username");
+
+    if (!chat) {
+        return res.status(403).json({ message: "Not allowed to view this chat" });
+    }
+
   res.json(chat);
 });
 

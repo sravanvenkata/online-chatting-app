@@ -7,6 +7,16 @@ const router = express.Router();
 
 router.post("/send", auth,async (req,res) =>{
     const {chatId, text} = req.body;
+
+    const chat = await Chat.findOne({
+      _id: chatId,
+      participants: req.userId,
+    });
+
+    if (!chat) {
+      return res.status(403).json({ message: "Not allowed to send in this chat" });
+    }
+
     const message = new Message({
         chatId,
         senderId: req.userId,
@@ -25,6 +35,15 @@ router.post("/send", auth,async (req,res) =>{
 
 router.get("/:chatId", auth, async (req, res) => {
   const { chatId } = req.params;
+
+  const chat = await Chat.findOne({
+    _id: chatId,
+    participants: req.userId,
+  });
+
+  if (!chat) {
+    return res.status(403).json({ message: "Not allowed to view messages in this chat" });
+  }
 
   const messages = await Message.find({ chatId })
     .sort({ createdAt: 1 });
